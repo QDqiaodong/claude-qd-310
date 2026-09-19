@@ -28,5 +28,10 @@ export const checkApi = {
   overview: () => http.get('/checks/overview'),
   add: (b) => http.post('/checks', b)
 }
+export const quarantineApi = {
+  list: (params) => http.get('/quarantine-feedings', { params }),
+  latestCheck: (animalId) => http.get('/quarantine-feedings/latest-check', { params: { animalId } }),
+  add: (b) => http.post('/quarantine-feedings', b)
+}
 
 export default http

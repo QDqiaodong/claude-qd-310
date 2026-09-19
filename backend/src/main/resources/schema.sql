@@ -1,6 +1,7 @@
 -- 动物园 · 笼舍与饲养巡查
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS quarantine_feeding;
 DROP TABLE IF EXISTS vet_check;
 DROP TABLE IF EXISTS feeding;
 DROP TABLE IF EXISTS animal;
@@ -56,6 +57,22 @@ CREATE TABLE vet_check (
   KEY idx_check_animal (animal_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 隔离加餐单：只服务隔离动物，和普通投喂流水分开记；
+-- 同一只动物一个日历日只能落一张，唯一约束连并发同时提交也挡得住。
+CREATE TABLE quarantine_feeding (
+  id           BIGINT      NOT NULL AUTO_INCREMENT,
+  feeding_code VARCHAR(40) NOT NULL,
+  animal_id    BIGINT      NOT NULL,
+  feed_date    DATE        NOT NULL,
+  food_name    VARCHAR(40) NOT NULL,
+  amount       INT         NOT NULL,
+  keeper_name  VARCHAR(32) NOT NULL,
+  created_at   DATETIME    NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_qf_code (feeding_code),
+  UNIQUE KEY uk_qf_animal_day (animal_id, feed_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 INSERT INTO enclosure (enclosure_code, enclosure_name, zone_area, capacity, enclosure_state) VALUES
 ('EN-01', '猛兽馆 1 号', 260, 3, '开放'),
 ('EN-02', '灵长馆 2 号', 180, 6, '开放'),
@@ -83,4 +100,9 @@ INSERT INTO vet_check (check_code, animal_id, check_date, vet_name, check_result
 ('VC-02', 2, '2026-09-15', '孙兽医', '异常', '食欲下降，继续观察'),
 ('VC-03', 3, '2026-09-16', '钱兽医', '正常', '精神状态良好'),
 ('VC-04', 4, '2026-09-17', '钱兽医', '异常', '羽毛轻微脱落'),
-('VC-05', 1, '2026-09-18', '孙兽医', '正常', '无异常');
+('VC-05', 1, '2026-09-18', '孙兽医', '正常', '无异常'),
+('VC-06', 5, '2026-09-18', '钱兽医', '异常', '隔离观察，夜间可补嫩青草，别超过 200 克');
+
+-- 青青（AN-05）昨晚已经落下的一张加餐单：隔天再进隔离加餐台，它还得在。
+INSERT INTO quarantine_feeding (feeding_code, animal_id, feed_date, food_name, amount, keeper_name, created_at) VALUES
+('QF-AN-05-2026-09-18', 5, '2026-09-18', '嫩青草', 150, '小王', '2026-09-18 20:05:00');

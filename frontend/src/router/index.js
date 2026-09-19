@@ -5,6 +5,7 @@ const routes = [
   { path: '/enclosures', component: () => import('../views/Enclosures.vue'), meta: { label: '笼舍' } },
   { path: '/animals', component: () => import('../views/Animals.vue'), meta: { label: '动物' } },
   { path: '/feedings', component: () => import('../views/Feedings.vue'), meta: { label: '投喂' } },
+  { path: '/quarantine-feedings', component: () => import('../views/QuarantineFeedings.vue'), meta: { label: '隔离加餐台' } },
   { path: '/checks', component: () => import('../views/Checks.vue'), meta: { label: '兽医巡查' } }
 ]
 

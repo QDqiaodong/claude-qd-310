@@ -28,5 +28,9 @@ export const checkApi = {
   overview: () => http.get('/checks/overview'),
   add: (b) => http.post('/checks', b)
 }
+export const isolationMealApi = {
+  list: () => http.get('/isolation-meals'),
+  add: (b) => http.post('/isolation-meals', b)
+}
 
 export default http

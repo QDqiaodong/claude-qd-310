@@ -1,6 +1,7 @@
 -- 动物园 · 笼舍与饲养巡查
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS isolation_meal;
 DROP TABLE IF EXISTS vet_check;
 DROP TABLE IF EXISTS feeding;
 DROP TABLE IF EXISTS animal;
@@ -54,6 +55,20 @@ CREATE TABLE vet_check (
   PRIMARY KEY (id),
   UNIQUE KEY uk_check_code (check_code),
   KEY idx_check_animal (animal_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 隔离加餐台：只收隔离动物的加餐单，同一动物同一个日历日只能落下一张
+CREATE TABLE isolation_meal (
+  id          BIGINT      NOT NULL AUTO_INCREMENT,
+  meal_code   VARCHAR(20) NOT NULL,
+  animal_id   BIGINT      NOT NULL,
+  meal_date   DATE        NOT NULL,
+  food_name   VARCHAR(40) NOT NULL,
+  grams       INT         NOT NULL,
+  keeper_name VARCHAR(32) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_meal_code (meal_code),
+  UNIQUE KEY uk_meal_animal_day (animal_id, meal_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO enclosure (enclosure_code, enclosure_name, zone_area, capacity, enclosure_state) VALUES
